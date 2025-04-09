@@ -1,6 +1,6 @@
 {
 	"name": "typed-rest-routes",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "An Astro integration that allows for creating type-safe server endpoints.",
 	"packageManager": "pnpm@9.15.4",
 	"license": "MIT",
@@ -38,9 +38,9 @@
 		"typescript": "^5.8.3",
 		"@types/node": "22.14.0",
 		"@changesets/changelog-github": "0.5.1",
-    "@changesets/cli": "2.28.1",
-    "@changesets/config": "3.1.1",
-    "@changesets/write": "0.4.0"
+		"@changesets/cli": "2.28.1",
+		"@changesets/config": "3.1.1",
+		"@changesets/write": "0.4.0"
 	},
 	"exports": {
 		".": {
