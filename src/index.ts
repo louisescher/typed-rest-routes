@@ -84,10 +84,7 @@ export default defineIntegration({
                     });
                 },
                 "astro:server:setup": async (params) => {
-                    finishedRoutesDTS = `export interface TypedRoutes {
-  [key: string]: {
-    [key: import("typed-rest-routes/types").HTTPMethod]: Response & { _result: any; };
-  };\n`;
+                    finishedRoutesDTS = `export interface TypedRoutes {\n`;
 
                     const HTTP_METHODS = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'];
 
