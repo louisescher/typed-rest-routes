@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.1.2
+
+### Patch Changes
+
+- [`9a93136`](https://github.com/louisescher/typed-rest-routes/commit/9a93136c98739210f52eb960566cf7296c5782cd) Thanks [@louisescher](https://github.com/louisescher)! - Fixes route types not being autocompleted
+
 ## 0.1.1
 
 ### Patch Changes
