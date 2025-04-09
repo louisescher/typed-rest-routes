@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.1.1
+
+### Patch Changes
+
+- [#5](https://github.com/louisescher/typed-rest-routes/pull/5) [`10b67c8`](https://github.com/louisescher/typed-rest-routes/commit/10b67c8e4a8cd0de8e717e35e05c45ab173da5fc) Thanks [@louisescher](https://github.com/louisescher)! - Fixes client-side types not working as intended on Linux
+
 ## 0.1.0
 
 ### Minor Changes
