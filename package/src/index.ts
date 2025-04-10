@@ -8,6 +8,7 @@ import type { InjectedType } from "astro";
 export default defineIntegration({
     name: "typed-rest-routes",
     setup({ name }) {
+        let astroConfigPath: string;
         let finishedRoutesDTS: string | null = null;
         const endpoints: Array<{ routeTypeString: string, entrypoint: string }> = [];
         let _injectTypes: (injectedType: InjectedType) => URL;
@@ -62,8 +63,9 @@ export default defineIntegration({
                         });
                     }
                 },
-                "astro:config:done": ({ injectTypes }) => {
+                "astro:config:done": ({ injectTypes, config }) => {
                     _injectTypes = injectTypes;
+                    astroConfigPath = config.root.pathname
                     
                     const routesLoc = injectTypes({
                         filename: "trr-routes.d.ts",
@@ -84,6 +86,8 @@ export default defineIntegration({
                     });
                 },
                 "astro:server:setup": async (params) => {
+                    const { resolve: projectRootResolve } = createResolver(astroConfigPath);
+
                     finishedRoutesDTS = `export interface TypedRoutes {\n`;
 
                     const HTTP_METHODS = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'];
@@ -95,7 +99,7 @@ export default defineIntegration({
                         finishedRoutesDTS += `  '${routeTypeString}': {\n`;
 
                         for (const method of HTTP_METHODS.filter((method) => modExports.includes(method))) {
-                            finishedRoutesDTS += `    '${method}': typeof import("../../../${entrypoint}").${method};\n`;
+                            finishedRoutesDTS += `    '${method}': typeof import("${projectRootResolve(`./${entrypoint}`)}").${method};\n`;
                         }
 
                         finishedRoutesDTS += `  }\n`;
