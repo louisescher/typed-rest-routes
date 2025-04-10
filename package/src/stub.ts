@@ -14,16 +14,7 @@ declare module "trr:server" {
 	 * @param options - The options for the route.
 	 * @returns An Astro compatible APIRoute.
 	 */
-	export function defineRoute<
-		Schema extends import("astro/zod").ZodTypeAny = import("astro/zod").ZodUndefined,
-		Result extends import("${resolve("./types")}").GenericResult = undefined
-	>(
-		options: import("${resolve("./types")}").RouteDefinition<Schema, Result>
-	): (
-		schema: import("astro/zod").infer<Schema>
-	) => Response & {
-	 	_result: Result
-	};
+	export const defineRoute: typeof import("${resolve('./wrappers.js')}").defineRoute;
 }
 
 type ImportedTypedRoutes = import("%TYPED_ROUTES_LOCATION%").TypedRoutes;
@@ -39,10 +30,10 @@ declare module "trr:client" {
 	export function callRoute<
 		Route extends keyof ImportedTypedRoutes,
 		Method extends keyof ImportedTypedRoutes[Route],
-		Data extends Parameters<ImportedTypedRoutes[Route][Method]>[0],
+		Data extends Parameters<ImportedTypedRoutes[Route][Method]>[1],
 		Result extends ReturnType<ImportedTypedRoutes[Route][Method]>['_result']
 	>(
-		...args: (Data extends undefined ? [url: Route, method: Method] : [url: Route, method: Method, data: Data])
+		...args: (Data extends import("astro/zod").ZodUndefined ? [url: Route, method: Method] : [url: Route, method: Method, data: Data])
 	): Promise<Result>;
 }
 `;
