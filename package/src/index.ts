@@ -1,116 +1,112 @@
-import { addVirtualImports, createResolver, defineIntegration } from "astro-integration-kit";
+import fs from 'node:fs';
+import type { Plugin } from "vite";
+import { addVirtualImports, createResolver, defineIntegration, addVitePlugin } from "astro-integration-kit";
 import { stub } from "./stub.js";
-import type { InjectedType } from "astro";
+import { generateEndpoints, generateRouteTypes } from "./utils.js";
+import type { AstroIntegrationLogger, InjectedType } from "astro";
+import type { Endpoint, SSRLoadModuleFn } from "./types.js";
 
 /**
  * An integration that adds support for typed server endpoints in Astro.
  */
 export default defineIntegration({
-    name: "typed-rest-routes",
-    setup({ name }) {
-        let finishedRoutesDTS: string | null = null;
-        const endpoints: Array<{ routeTypeString: string, entrypoint: string }> = [];
-        let _injectTypes: (injectedType: InjectedType) => URL;
+	name: "typed-rest-routes",
+	setup({ name }) {
+		const { resolve } = createResolver(import.meta.url);
 
-        const { resolve } = createResolver(import.meta.url);
+		let endpoints: Endpoint[] = [];
+		let finishedRoutesDTS: string;
 
-        return {
-            hooks: {
-                "astro:config:setup": (params) => {
-                    addVirtualImports(params, {
-                        name,
-                        imports: [
-                            {
-                                id: "trr:server",
-                                content: `export { defineRoute } from "${resolve('./wrappers.js')}"`,
-                                context: "server", 
-                            },
-                            {
-                                id: "trr:client",
-                                content: `export { callRoute } from "${resolve('./wrappers.js')}"`,
-                                context: "client",
-                            }
-                        ]
-                    });
-                },
-                "astro:routes:resolved": async ({ routes }) => {
-                    const allEndpoints = routes.filter((route) => route.type === "endpoint" && !route.pattern.startsWith("/_"));
+		let _injectTypes: (injectedType: InjectedType) => URL;
+		let injectedTypesPath: ReturnType<typeof _injectTypes>;
 
-                    for (const endpoint of allEndpoints) {
-                        let joinedSegments: string = "";
-                        for (const segment of endpoint.segments) {
-                            for (const subSegment of segment) {
-                                const { content, dynamic, spread } = subSegment;
-                                
-                                if (spread && dynamic) {
-                                    joinedSegments += "/${string | undefined}";
-                                    continue;
-                                }
+		let _ssrLoadModule: SSRLoadModuleFn;
+		let _logger: AstroIntegrationLogger;
 
-                                if (dynamic) {
-                                    joinedSegments += "/${string}";
-                                    continue;
-                                }
-                                
-                                joinedSegments += `/${content}`;
-                            }
-                        }
+		/**
+		 * A Vite plugin that handles hot updates for the typed routes.
+		 */
+		const plugin: Plugin = {
+			name: "trr-hot-updates",
+			handleHotUpdate: async ({ file }) => {
+				try {
+					if (!file.endsWith(".ts") && !file.endsWith(".js") || file.endsWith(".d.ts")) return;
+					
+					const endpoint = endpoints.find((endpoint) => file.includes(endpoint.entrypoint));
 
-                        endpoints.push({
-                            routeTypeString: joinedSegments,
-                            entrypoint: endpoint.entrypoint
-                        });
-                    }
-                },
-                "astro:config:done": ({ injectTypes }) => {
-                    _injectTypes = injectTypes;
-                    
-                    const routesLoc = injectTypes({
-                        filename: "trr-routes.d.ts",
-                        content: finishedRoutesDTS!,
-                    });
+					if (!endpoint) return;
 
-                    let filePath = routesLoc.pathname;
+					finishedRoutesDTS = await generateRouteTypes(endpoints, _ssrLoadModule, _logger);
 
-                    const onWindows = process.platform === "win32";
-                    if (onWindows) {
-                        // Replace first slash
-                        filePath = filePath.replace(/^\//, "");
-                    }
+					fs.writeFileSync(injectedTypesPath, finishedRoutesDTS);
 
-                    injectTypes({
-                        filename: "trr.d.ts",
-                        content: stub.replaceAll("%TYPED_ROUTES_LOCATION%", filePath),
-                    });
-                },
-                "astro:server:setup": async (params) => {
-                    finishedRoutesDTS = `export interface TypedRoutes {\n`;
+					_logger.debug(`Updated typed routes for ${endpoint.routeTypeString}`);
+				} catch (e) {
+					_logger.error(`Failed to update types for ${file}: ${e}`);
+				}
+			}
+		};
 
-                    const HTTP_METHODS = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'];
+		return {
+			hooks: {
+				"astro:config:setup": (params) => {
+					_logger = params.logger;
 
-                    for (const { routeTypeString, entrypoint } of endpoints) {
-                        const module = await params.server.ssrLoadModule(entrypoint);
-                        const modExports = Object.keys(module);
-    
-                        finishedRoutesDTS += `  '${routeTypeString}': {\n`;
+					addVitePlugin(params, { plugin });
+					addVirtualImports(params, {
+						name,
+						imports: [
+							{
+								id: "trr:server",
+								content: `export { defineRoute } from "${resolve('./wrappers.js')}"`,
+								context: "server", 
+							},
+							{
+								id: "trr:client",
+								content: `export { callRoute } from "${resolve('./wrappers.js')}"`,
+								context: "client",
+							}
+						]
+					});
+				},
+				"astro:routes:resolved": async ({ routes }) => {
+					const allEndpoints = routes.filter((route) => route.type === "endpoint" && !route.pattern.startsWith("/_"));
 
-                        for (const method of HTTP_METHODS.filter((method) => modExports.includes(method))) {
-                            finishedRoutesDTS += `    '${method}': typeof import("../../../${entrypoint}").${method};\n`;
-                        }
+					endpoints = generateEndpoints(allEndpoints);
+				},
+				"astro:config:done": ({ injectTypes }) => {
+					_injectTypes = injectTypes;
+					
+					injectedTypesPath = injectTypes({
+						filename: "trr-routes.d.ts",
+						content: finishedRoutesDTS!,
+					});
 
-                        finishedRoutesDTS += `  }\n`;
-    
-                        finishedRoutesDTS += `}`;
-                    }
+					let filePath = injectedTypesPath.pathname;
 
-                    if (_injectTypes) {
-                        _injectTypes({
-                            filename: 'trr-routes.d.ts',
-                            content: finishedRoutesDTS,
-                        })
-                    }
-                },
-            }
-        }
-    }
+					const onWindows = process.platform === "win32";
+					if (onWindows) {
+						// Replace first slash
+						filePath = filePath.replace(/^\//, "");
+					}
+
+					injectTypes({
+						filename: "trr.d.ts",
+						content: stub.replaceAll("%TYPED_ROUTES_LOCATION%", filePath),
+					});
+				},
+				"astro:server:setup": async ({ server, logger }) => {
+					_ssrLoadModule = server.ssrLoadModule;
+					finishedRoutesDTS = await generateRouteTypes(endpoints, server.ssrLoadModule, logger);
+
+					if (_injectTypes) {
+						_injectTypes({
+							filename: 'trr-routes.d.ts',
+							content: finishedRoutesDTS,
+						});
+					}
+				},
+			}
+		}
+	},
 });
