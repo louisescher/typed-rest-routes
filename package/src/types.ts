@@ -11,5 +11,5 @@ export type GenericResult = BodyInit | null | undefined | any | Array<any> | Res
 
 export type RouteDefinition<Schema extends z.ZodTypeAny, Result extends GenericResult> = {
 	schema?: Schema;
-	handler: (context: Parameters<APIRoute>[0], body?: z.infer<Schema>) => Result;
+	handler: (context: Parameters<APIRoute>[0], body: z.infer<Schema>) => Result;
 }

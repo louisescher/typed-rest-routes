@@ -58,7 +58,7 @@ function defineRoute<
 		const result = schema.safeParse(reqBody);
 
 		if (!result.success) {
-			return new Response("Invalid request", { status: 400 });
+			return new Response(result.error.issues[0].message, { status: 400 });
 		}
 
 		let handlerRes: GenericResult = await handler(context, result.data);

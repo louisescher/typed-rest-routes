@@ -1,0 +1,11 @@
+<h1>Please refer to the browser console.</h1>
+<script>
+	import { callRoute } from "trr:client";
+
+	const main = async () => {
+		const res = await callRoute("/api", "GET");
+		console.log(res);
+	}
+
+	main();
+</script>

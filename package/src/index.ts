@@ -94,16 +94,8 @@ export default defineIntegration({
     
                         finishedRoutesDTS += `  '${routeTypeString}': {\n`;
 
-                        let entrypointPath = entrypoint;
-
-                        const onWindows = process.platform === "win32";
-                        if (!onWindows) {
-                            // Manual fix for linux not picking up on the right path
-                            entrypointPath = `../../../${entrypoint}`;
-                        }
-
                         for (const method of HTTP_METHODS.filter((method) => modExports.includes(method))) {
-                            finishedRoutesDTS += `    '${method}': typeof import("${entrypointPath}").${method};\n`;
+                            finishedRoutesDTS += `    '${method}': typeof import("../../../${entrypoint}").${method};\n`;
                         }
 
                         finishedRoutesDTS += `  }\n`;
