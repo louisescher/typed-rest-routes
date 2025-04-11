@@ -62,6 +62,10 @@ function handleHandlerResponse(result: GenericResult): Response {
  * @returns 
  */
 async function bruteForceRequestBody(request: Request, iterations: number = 0): Promise<unknown | false> {
+	if (iterations > 4) {
+		return false;
+	}
+	
 	try {
 		switch (iterations) {
 			case 0:
