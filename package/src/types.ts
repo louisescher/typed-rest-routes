@@ -13,3 +13,10 @@ export type RouteDefinition<Schema extends z.ZodTypeAny, Result extends GenericR
 	schema?: Schema;
 	handler: (context: Parameters<APIRoute>[0], body: z.infer<Schema>) => Result;
 }
+
+export type Endpoint = {
+	routeTypeString: string;
+	entrypoint: string;
+}
+
+export type SSRLoadModuleFn = (url: string, opts?: { fixStacktrace?: boolean | undefined; } | undefined) => Promise<Record<string, any>>;
