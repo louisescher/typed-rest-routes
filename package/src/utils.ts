@@ -1,5 +1,6 @@
 import type { AstroIntegrationLogger, IntegrationResolvedRoute } from "astro";
 import type { Endpoint, SSRLoadModuleFn } from "./types";
+import { createResolver } from "astro-integration-kit";
 
 /**
  * Generates an array of endpoints from the given routes.
@@ -45,7 +46,14 @@ export const generateEndpoints = (routes: IntegrationResolvedRoute[]): Endpoint[
  * @param logger - The Astro integration logger.
  * @returns - A promise that resolves to a DTS string.
  */
-export const generateRouteTypes = async (endpoints: Endpoint[], ssrLoadModule: SSRLoadModuleFn, logger: AstroIntegrationLogger): Promise<string> => {
+export const generateRouteTypes = async (
+	endpoints: Endpoint[],
+	ssrLoadModule: SSRLoadModuleFn,
+	logger: AstroIntegrationLogger,
+	rootPath: string
+): Promise<string> => {
+	const { resolve: projectRootResolve } = createResolver(rootPath);
+
 	let dtsString = `export interface TypedRoutes {\n`;
 
 	const HTTP_METHODS = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'];
@@ -58,7 +66,7 @@ export const generateRouteTypes = async (endpoints: Endpoint[], ssrLoadModule: S
 			dtsString += `  '${routeTypeString}': {\n`;
 	
 			for (const method of HTTP_METHODS.filter((method) => modExports.includes(method))) {
-				dtsString += `    '${method}': typeof import("../../../${entrypoint}").${method};\n`;
+				dtsString += `    '${method}': typeof import("${projectRootResolve(`./${entrypoint}`)}").${method};\n`;
 			}
 	
 			dtsString += `  },\n`;
