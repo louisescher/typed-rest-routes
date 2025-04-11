@@ -22,6 +22,7 @@ export default defineIntegration({
 
 		let _ssrLoadModule: SSRLoadModuleFn;
 		let _logger: AstroIntegrationLogger;
+		let _astroConfigPath: string;
 
 		/**
 		 * A Vite plugin that handles hot updates for the typed routes.
@@ -36,7 +37,7 @@ export default defineIntegration({
 
 					if (!endpoint) return;
 
-					finishedRoutesDTS = await generateRouteTypes(endpoints, _ssrLoadModule, _logger);
+					finishedRoutesDTS = await generateRouteTypes(endpoints, _ssrLoadModule, _logger, _astroConfigPath);
 
 					fs.writeFileSync(injectedTypesPath, finishedRoutesDTS);
 
@@ -51,6 +52,7 @@ export default defineIntegration({
 			hooks: {
 				"astro:config:setup": (params) => {
 					_logger = params.logger;
+					_astroConfigPath = params.config.root.pathname;
 
 					addVitePlugin(params, { plugin });
 					addVirtualImports(params, {
@@ -97,7 +99,7 @@ export default defineIntegration({
 				},
 				"astro:server:setup": async ({ server, logger }) => {
 					_ssrLoadModule = server.ssrLoadModule;
-					finishedRoutesDTS = await generateRouteTypes(endpoints, server.ssrLoadModule, logger);
+					finishedRoutesDTS = await generateRouteTypes(endpoints, server.ssrLoadModule, logger, _astroConfigPath);
 
 					if (_injectTypes) {
 						_injectTypes({
