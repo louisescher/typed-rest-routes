@@ -1,5 +1,13 @@
 # typed-rest-routes
 
+## 0.1.4
+
+### Patch Changes
+
+- [#10](https://github.com/louisescher/typed-rest-routes/pull/10) [`bbf0f9e`](https://github.com/louisescher/typed-rest-routes/commit/bbf0f9e9950e6c11433bcafcd0b57ac184a90574) Thanks [@Adammatthiesen](https://github.com/Adammatthiesen)! - Modify typed route generation to automatically get the astro project root instead of relying on relative path
+
+- [#11](https://github.com/louisescher/typed-rest-routes/pull/11) [`6043569`](https://github.com/louisescher/typed-rest-routes/commit/604356954c6cf49c7c7a39b9de86687a577bc931) Thanks [@louisescher](https://github.com/louisescher)! - Refactors the integration with better error handling and support for HMR. Also fixes parsing issues.
+
 ## 0.1.3
 
 ### Patch Changes
