@@ -6,13 +6,13 @@ export const GET = defineRoute({
 		id: z.string({ message: "id is required" }),
 	}, { message: "This endpoint needs query parameters (id)" }),
 	handler: (context, { id }) => {
-		return `[GET]    Body: ${id}`;
+		return `[GET]    Data: ${id}`;
 	}
 });
 
 export const PUT = defineRoute({
 	handler: (context) => {
-		return `[PUT]    Body: (None)`;
+		return `[PUT]    Data: (None)`;
 	}
 });
 
@@ -21,7 +21,7 @@ export const POST = defineRoute({
 		id: z.string({ message: "id is required" }),
 	}, { message: "This endpoint needs a JSON body with an id key" }),
 	handler: (context, { id }) => {
-		return `[POST]   Body: ${id}`;
+		return `[POST]   Data: ${id}`;
 	}
 });
 
@@ -30,6 +30,6 @@ export const DELETE = defineRoute({
 		id: z.string({ message: "id is required" }),
 	}, { message: "This endpoint needs a JSON body with an id key" }),
 	handler: (context, { id }) => {
-		return `[DELETE] Body: ${id}`;
+		return `[DELETE] Data: ${id}`;
 	}
 });
