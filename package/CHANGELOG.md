@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.3
+
+### Patch Changes
+
+- [#20](https://github.com/louisescher/typed-rest-routes/pull/20) [`8dcbd90`](https://github.com/louisescher/typed-rest-routes/commit/8dcbd906f5c664c9f47b5a6f03eab34e453b6726) Thanks [@louisescher](https://github.com/louisescher)! - Fixes invalid `context` and `body` types in the handler definiton of the `defineRoute` function
+
 ## 0.2.2
 
 ### Patch Changes
