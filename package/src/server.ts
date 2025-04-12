@@ -71,20 +71,21 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 
 		switch (iterations) {
 			case 0:
-				return cloned.json();
+				return await cloned.json();
 			case 1:
-				return cloned.formData();
+				return await cloned.formData();
 			case 2:
-				return cloned.arrayBuffer();
+				return await cloned.arrayBuffer();
 			case 3:
-				return cloned.blob();
+				return await cloned.blob();
 			case 4:
-				return cloned.text();
+				return await cloned.text();
 			default:
 				return false;
 		}
 	} catch (e) {
-		return bruteForceRequestBody(request, iterations + 1);
+		const body = await bruteForceRequestBody(request, iterations + 1);
+		return body;
 	}
 }
 

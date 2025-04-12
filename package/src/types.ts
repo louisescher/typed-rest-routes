@@ -3,7 +3,7 @@
  * @module
  */
 
-import { z } from "astro/zod";
+import type { z } from "astro/zod";
 import type { APIRoute } from "astro";
 
 export type HTTPMethod = 'GET' | 'PUT' | 'POST' | 'PATCH' | 'DELETE' | 'HEAD';
