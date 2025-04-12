@@ -59,7 +59,7 @@ function handleHandlerResponse(result: GenericResult): Response {
  * Brute forces the request body to find the correct type. Used since we can't rely on a correct header being provided.
  * @param request - The request to brute force.
  * @param iterations - The number of iterations to try.
- * @returns 
+ * @returns - The parsed body or false if it fails.
  */
 async function bruteForceRequestBody(request: Request, iterations: number = 0): Promise<unknown | false> {
 	if (iterations > 4) {
@@ -90,46 +90,38 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 }
 
 function defineRoute<
-	QuerySchema extends z.ZodTypeAny = z.ZodUndefined,
 	Schema extends z.ZodTypeAny = z.ZodUndefined,
 	Result extends GenericResult = undefined
 >(
-	{ query, schema, handler }: EndpointDefinition<QuerySchema, Schema, Result>
-): WrappedAPIRoute<QuerySchema, Schema> & { _result: Result } {
+	{ schema, handler }: EndpointDefinition<Schema, Result>
+): WrappedAPIRoute<Schema> & { _result: Result } {
 	// @ts-expect-error - Type black magic. Not actually used (lmao)
 	return async (context) => {
-		let reqQueryObj: z.SafeParseSuccess<z.infer<QuerySchema>>['data'] | undefined = undefined;
-
-		if (query) {
-			const queryParamObj = context.url.searchParams.size > 0 ? Object.fromEntries(context.url.searchParams.entries()) : undefined;
-			const queryResult = query.safeParse(queryParamObj);
-
-			if (!queryResult.success) {
-				return new Response(queryResult.error.issues[0].message, { status: 400 });
-			}
-
-			reqQueryObj = queryResult.data;
-		}
-
 		if (!schema) {
-			let result: GenericResult = await handler(context, reqQueryObj, undefined);
+			let result: GenericResult = await handler(context, undefined);
 
 			return handleHandlerResponse(result);
 		}
 		
-		let reqBody = await bruteForceRequestBody(context.request);
+		let data: any | false = undefined;
+		
+		if (context.request.method === "GET") {
+			data = context.url.searchParams.size > 0 ? Object.fromEntries(context.url.searchParams.entries()) : undefined;
+		} else {
+			data = await bruteForceRequestBody(context.request);
+		}
 
-		if (reqBody === false) {
+		if (data === false) {
 			return new Response("Unsupported request body", { status: 400 });
 		}
 
-		const result = schema.safeParse(reqBody || undefined);
+		const result = schema.safeParse(data || undefined);
 
 		if (!result.success) {
 			return new Response(result.error.issues[0].message, { status: 400 });
 		}
 
-		let handlerRes: GenericResult = await handler(context, reqQueryObj, result.data);
+		let handlerRes: GenericResult = await handler(context, result.data);
 
 		return handleHandlerResponse(handlerRes);
 	};

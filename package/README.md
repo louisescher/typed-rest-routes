@@ -85,19 +85,19 @@ async function main() {
 main();
 ```
 
-Another advantage of using TRR is that you can define schemas for your routes using [zod](https://zod.dev). This is helpful when creating handlers that take in a body or query parameters:
+Another advantage of using TRR is that you can define schemas for your routes using [Zod](https://zod.dev). This is helpful when creating handlers that take in data (and works with both GET and POST requests):
 
 ```ts
 import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
 export const GET = defineRoute({
-	query: z.object({
+	schema: z.object({
 		name: z.string()
 	}),
-	handler: async (context, query) => {
-		// `query` is typed and already verified!
-		return `Hello, ${query.name}!`;
+	handler: async (context, data) => {
+		// `data` is typed and already verified!
+		return `Hello, ${data.name}!`;
 	},
 });
 
@@ -105,14 +105,14 @@ export const POST = defineRoute({
 	schema: z.object({
 		name: z.string()
 	}),
-	handler: async (context, query, body) => {
-		// `body` is typed and already verified!
-		return `Hello, ${body.name}!`;
+	handler: async (context, data) => {
+		// `data` is typed and already verified!
+		return `Hello, ${data.name}!`;
 	},
 });
 ```
 
-When using `callRoute`, you will now also get access to a third parameter for query params and a fourth parameter for the body with full completions:
+When using `callRoute`, you will then also get access to a third parameter for the data with full type safety:
 
 ```ts
 import { callRoute } from "typed-rest-routes/client";
@@ -123,8 +123,8 @@ async function main() {
 		name: "Houston"
 	});
 	
-	// An example of no query parameters but a body instead
-	const result = await callRoute("/api/hello", "POST", undefined, {
+	// You will get full type completions here!
+	const result = await callRoute("/api/hello", "POST", {
 		name: "Houston"
 	});
 }
@@ -134,7 +134,7 @@ main();
 
 ### Advanced Usage
 
-Since TRR is built on normal server endpoints, the `handler` function you pass to `defineRoute` always has access to the [Astro context](https://docs.astro.build/en/guides/middleware/#the-context-object) as the first parameter. If you define a query schema, a type-safe object containing the query parameters as key-value pairs will be passed as the second parameter. If you do not define one, the second parameter will be undefined. If you define a schema, the third parameter will be the parsed body of the request.
+Since TRR is built on normal server endpoints, the `handler` function you pass to `defineRoute` always has access to the [Astro context](https://docs.astro.build/en/guides/middleware/#the-context-object) as the first parameter. If you define a schema, the second parameter will be the parsed data from the request.
 
 #### Custom Errors
 
@@ -146,8 +146,8 @@ export const POST = defineRoute({
 	schema: z.object({
 		name: z.string({ message: "The name key must be set to a string!" })
 	}, { message: "Missing JSON body!" }),
-	handler: async (context, { name }) => {
-		return `Hello, ${name}!`
+	handler: async (context, data) => {
+		return `Hello, ${data.name}!`
 	},
 });
 ```

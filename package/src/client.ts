@@ -1,24 +1,25 @@
 import type { z } from "astro/zod";
-import type { ArgTuple, NonDefinitiveArgs } from "./types";
+import type { NonDefinitiveArgs } from "./types";
 
 async function callRoute<
 	Route extends keyof TypedRoutes,
 	Method extends keyof TypedRoutes[Route],
+	Data extends z.infer<Parameters<TypedRoutes[Route][Method]>[1]>,
 	Result extends TypedRoutes[Route][Method]['_result']
 >(
-	...args: ArgTuple<Route, Method>
+	...args: (Data extends undefined 
+		? [route: Route, method: Method] 
+		: [route: Route, method: Method, data: Data]
+	)
 ): Promise<unknown> {
-	const [route, method, query, data] = args as NonDefinitiveArgs<
-		Route,
-		Method,
-		z.infer<Parameters<TypedRoutes[Route][Method]>[1]>,
-		z.infer<Parameters<TypedRoutes[Route][Method]>[2]>
-	>;
+	const [route, method, data] = args as NonDefinitiveArgs<Route, Method, Data>;
 
 	let url = route as string;
 
-	if (query) {
-		const queryParams = new URLSearchParams(query as Record<string, string>);
+	const useQueryParams = method === "GET" || method === "HEAD";
+
+	if ((method === "GET" || method === "HEAD") && !!data) {
+		const queryParams = new URLSearchParams(data);
 		url += `?${queryParams.toString()}`;
 	}
 
@@ -27,7 +28,7 @@ async function callRoute<
 		headers: new Headers({
 			"Content-Type": "application/json"
 		}),
-		body: data ? JSON.stringify(data) : undefined,
+		body: !!data && !useQueryParams ? JSON.stringify(data) : undefined,
 	});
 
 	const cTypeHeader = result.headers.get("content-type");
