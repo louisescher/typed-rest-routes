@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.4
+
+### Patch Changes
+
+- [#22](https://github.com/louisescher/typed-rest-routes/pull/22) [`930466a`](https://github.com/louisescher/typed-rest-routes/commit/930466aa2789c4674e6418e3bdcfd795230d3612) Thanks [@louisescher](https://github.com/louisescher)! - Fixes get requests with a schema not being able to send data by replacing the body implementation with query parameters.
+
 ## 0.2.3
 
 ### Patch Changes
