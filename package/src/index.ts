@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import type { Plugin } from "vite";
-import { addVirtualImports, createResolver, defineIntegration, addVitePlugin } from "astro-integration-kit";
+import { createResolver, defineIntegration, addVitePlugin } from "astro-integration-kit";
 import { stub } from "./stub.js";
 import { generateEndpoints, generateRouteTypes } from "./utils.js";
 import type { AstroIntegrationLogger, InjectedType } from "astro";
