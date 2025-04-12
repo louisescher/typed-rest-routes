@@ -47,6 +47,10 @@
 			"types": "./dist/types.d.ts",
 			"default": "./dist/types.js"
 		},
+		"./server": {
+			"types": "./dist/server.d.ts",
+			"default": "./dist/server.js"
+		},
 		"./client": {
 			"types": "./dist/client.d.ts",
 			"default": "./dist/client.js"

@@ -1,4 +1,4 @@
-import { defineRoute } from "trr:server";
+import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
 export const GET = defineRoute({
@@ -9,7 +9,7 @@ export const GET = defineRoute({
 
 export const POST = defineRoute({
 	schema: z.object({
-		id: z.string({ required_error: "id is required" }),
+		id: z.string({ message: "id is required" }),
 	}),
 	handler: (context, { id }) => {
 		return `Hello, ${id}!`;
