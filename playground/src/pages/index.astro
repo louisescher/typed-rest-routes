@@ -1,9 +1,17 @@
+---
+import { SomeReactComponent } from '../components/SomeReactComponent';
+---
+
 <h1>Please refer to the browser console.</h1>
+<SomeReactComponent client:load />
+
 <script>
-	import { callRoute } from "trr:client";
+	import { callRoute } from "typed-rest-routes/client";
 
 	const main = async () => {
-		const res = await callRoute("/api", "GET");
+		const res = await callRoute("/api", "POST", {
+			id: "Astro Component",
+		});
 		console.log(res);
 	}
 

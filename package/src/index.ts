@@ -55,21 +55,6 @@ export default defineIntegration({
 					_astroConfigPath = params.config.root.pathname;
 
 					addVitePlugin(params, { plugin });
-					addVirtualImports(params, {
-						name,
-						imports: [
-							{
-								id: "trr:server",
-								content: `export { defineRoute } from "${resolve('./wrappers.js')}"`,
-								context: "server", 
-							},
-							{
-								id: "trr:client",
-								content: `export { callRoute } from "${resolve('./wrappers.js')}"`,
-								context: "client",
-							}
-						]
-					});
 				},
 				"astro:routes:resolved": async ({ routes }) => {
 					const allEndpoints = routes.filter((route) => route.type === "endpoint" && !route.pattern.startsWith("/_"));

@@ -8,18 +8,18 @@ import { createResolver } from "astro-integration-kit";
 const { resolve } = createResolver(import.meta.url);
 
 const stub = `
-declare module "trr:server" {
+declare module "typed-rest-routes/server" {
 	/**
 	 * A function that can be used to define a type-safe server endpoint.
 	 * @param options - The options for the route.
 	 * @returns An Astro compatible APIRoute.
 	 */
-	export const defineRoute: typeof import("${resolve('./wrappers.js')}").defineRoute;
+	export const defineRoute: typeof import("${resolve('./server.js')}").defineRoute;
 }
 
-type ImportedTypedRoutes = import("%TYPED_ROUTES_LOCATION%").TypedRoutes;
+type TypedRoutes = import("%TYPED_ROUTES_LOCATION%").TypedRoutes;
 
-declare module "trr:client" {
+declare module "typed-rest-routes/client" {
 	/**
 	 * A function that can be used to call a type-safe server endpoint.
 	 * @param url - The URL of the route.
@@ -28,10 +28,10 @@ declare module "trr:client" {
 	 * @returns A promise that resolves to the result of the route.
 	 */
 	export function callRoute<
-		Route extends keyof ImportedTypedRoutes,
-		Method extends keyof ImportedTypedRoutes[Route],
-		Data extends Parameters<ImportedTypedRoutes[Route][Method]>[1],
-		Result extends ReturnType<ImportedTypedRoutes[Route][Method]>['_result']
+		Route extends keyof TypedRoutes,
+		Method extends keyof TypedRoutes[Route],
+		Data extends import("astro/zod").infer<Parameters<TypedRoutes[Route][Method]>[1]>,
+		Result extends TypedRoutes[Route][Method]['_result']
 	>(
 		...args: (Data extends import("astro/zod").ZodUndefined ? [url: Route, method: Method] : [url: Route, method: Method, data: Data])
 	): Promise<Result>;
