@@ -1,6 +1,6 @@
 {
 	"name": "typed-rest-routes",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": "An Astro integration that allows for creating type-safe server endpoints.",
 	"packageManager": "pnpm@9.15.4",
 	"license": "MIT",
