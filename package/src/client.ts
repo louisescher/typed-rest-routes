@@ -1,19 +1,34 @@
+import type { z } from "astro/zod";
+import type { NonDefinitiveArgs } from "./types";
+
 async function callRoute<
 	Route extends keyof TypedRoutes,
 	Method extends keyof TypedRoutes[Route],
-	Data extends Parameters<TypedRoutes[Route][Method]>[1],
-	Result extends ReturnType<TypedRoutes[Route][Method]>['_result']
+	Data extends z.infer<Parameters<TypedRoutes[Route][Method]>[1]>,
+	Result extends TypedRoutes[Route][Method]['_result']
 >(
-	url: Route,
-	method: Method,
-	data: Data,
-): Promise<Result> {
-	const result = await fetch(url as string, {
+	...args: (Data extends undefined 
+		? [route: Route, method: Method] 
+		: [route: Route, method: Method, data: Data]
+	)
+): Promise<unknown> {
+	const [route, method, data] = args as NonDefinitiveArgs<Route, Method, Data>;
+
+	let url = route as string;
+
+	const useQueryParams = method === "GET" || method === "HEAD";
+
+	if ((method === "GET" || method === "HEAD") && !!data) {
+		const queryParams = new URLSearchParams(data);
+		url += `?${queryParams.toString()}`;
+	}
+
+	const result = await fetch(url, {
 		method: method as string,
 		headers: new Headers({
 			"Content-Type": "application/json"
 		}),
-		body: JSON.stringify(data),
+		body: !!data && !useQueryParams ? JSON.stringify(data) : undefined,
 	});
 
 	const cTypeHeader = result.headers.get("content-type");

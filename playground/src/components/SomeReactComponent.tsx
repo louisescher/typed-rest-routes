@@ -3,9 +3,7 @@ import { callRoute } from "typed-rest-routes/client";
 
 export const SomeReactComponent = ({ request_id = "React Component" }) => {
 	const handleApi = async () => {
-		return await callRoute("/api", "POST", {
-			id: request_id,
-		});
+		return await callRoute("/api", "POST", { id: request_id });
 	}
 
 	useEffect(() => {

@@ -1,5 +1,5 @@
 import type { z } from "astro/zod";
-import type { GenericResult, RouteDefinition, WrappedAPIRoute } from "./types";
+import type { GenericResult, EndpointDefinition, WrappedAPIRoute } from "./types";
 import type { APIRoute } from "astro";
 
 /**
@@ -59,7 +59,7 @@ function handleHandlerResponse(result: GenericResult): Response {
  * Brute forces the request body to find the correct type. Used since we can't rely on a correct header being provided.
  * @param request - The request to brute force.
  * @param iterations - The number of iterations to try.
- * @returns 
+ * @returns - The parsed body or false if it fails.
  */
 async function bruteForceRequestBody(request: Request, iterations: number = 0): Promise<unknown | false> {
 	if (iterations > 4) {
@@ -75,11 +75,11 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 			case 1:
 				return await cloned.formData();
 			case 2:
-				return await cloned.arrayBuffer();
+				return await cloned.text();
 			case 3:
 				return await cloned.blob();
 			case 4:
-				return await cloned.text();
+				return await cloned.arrayBuffer();
 			default:
 				return false;
 		}
@@ -93,7 +93,7 @@ function defineRoute<
 	Schema extends z.ZodTypeAny = z.ZodUndefined,
 	Result extends GenericResult = undefined
 >(
-	{ schema, handler }: RouteDefinition<Schema, Result>
+	{ schema, handler }: EndpointDefinition<Schema, Result>
 ): WrappedAPIRoute<Schema> & { _result: Result } {
 	// @ts-expect-error - Type black magic. Not actually used (lmao)
 	return async (context) => {
@@ -103,13 +103,19 @@ function defineRoute<
 			return handleHandlerResponse(result);
 		}
 		
-		let reqBody = await bruteForceRequestBody(context.request);
+		let data: any | false = undefined;
+		
+		if (context.request.method === "GET") {
+			data = context.url.searchParams.size > 0 ? Object.fromEntries(context.url.searchParams.entries()) : undefined;
+		} else {
+			data = await bruteForceRequestBody(context.request);
+		}
 
-		if (reqBody === false) {
+		if (data === false) {
 			return new Response("Unsupported request body", { status: 400 });
 		}
 
-		const result = schema.safeParse(reqBody);
+		const result = schema.safeParse(data || undefined);
 
 		if (!result.success) {
 			return new Response(result.error.issues[0].message, { status: 400 });

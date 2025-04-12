@@ -9,10 +9,15 @@ import { SomeReactComponent } from '../components/SomeReactComponent';
 	import { callRoute } from "typed-rest-routes/client";
 
 	const main = async () => {
-		const res = await callRoute("/api", "POST", {
-			id: "Astro Component",
-		});
-		console.log(res);
+		const get = await callRoute("/api", "GET", { id: "Astro Component" });
+		const put = await callRoute("/api", "PUT");
+		const pos = await callRoute("/api", "POST", { id: "Astro Component" });
+		const del = await callRoute("/api", "DELETE", { id: "Astro Component" });
+
+		console.log(get);
+		console.log(put);
+		console.log(pos);
+		console.log(del);
 	}
 
 	main();

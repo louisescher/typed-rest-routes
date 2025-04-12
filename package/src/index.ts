@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import type { Plugin } from "vite";
-import { createResolver, defineIntegration, addVitePlugin } from "astro-integration-kit";
+import { defineIntegration, addVitePlugin } from "astro-integration-kit";
 import { stub } from "./stub.js";
 import { generateEndpoints, generateRouteTypes } from "./utils.js";
 import type { AstroIntegrationLogger, InjectedType } from "astro";
@@ -11,9 +11,7 @@ import type { Endpoint, SSRLoadModuleFn } from "./types.js";
  */
 export default defineIntegration({
 	name: "typed-rest-routes",
-	setup({ name }) {
-		const { resolve } = createResolver(import.meta.url);
-
+	setup() {
 		let endpoints: Endpoint[] = [];
 		let finishedRoutesDTS: string;
 

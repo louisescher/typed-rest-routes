@@ -1,4 +1,5 @@
-import type { HTTPMethod } from "./src/types"
+import type { ZodUndefined } from "astro:schema";
+import type { HTTPMethod, WrappedAPIRoute } from "./src/types"
 
 declare global {
 	/**
@@ -6,8 +7,8 @@ declare global {
 	 */
 	interface TypedRoutes {
 		[route: string]: {
-			[method: string]: (...args: any[]) => Response & {
-				_result: any;
+			[method: string]: WrappedAPIRoute<ZodUndefined> & {
+				_result: any
 			};
 		};
 	}

@@ -2,16 +2,34 @@ import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
 export const GET = defineRoute({
+	schema: z.object({
+		id: z.string({ message: "id is required" }),
+	}, { message: "This endpoint needs query parameters (id)" }),
+	handler: (context, { id }) => {
+		return `[GET]    Data: ${id}`;
+	}
+});
+
+export const PUT = defineRoute({
 	handler: (context) => {
-		return "Hello World!";
+		return `[PUT]    Data: (None)`;
 	}
 });
 
 export const POST = defineRoute({
 	schema: z.object({
 		id: z.string({ message: "id is required" }),
-	}),
+	}, { message: "This endpoint needs a JSON body with an id key" }),
 	handler: (context, { id }) => {
-		return `Hello, ${id}!`;
+		return `[POST]   Data: ${id}`;
+	}
+});
+
+export const DELETE = defineRoute({
+	schema: z.object({
+		id: z.string({ message: "id is required" }),
+	}, { message: "This endpoint needs a JSON body with an id key" }),
+	handler: (context, { id }) => {
+		return `[DELETE] Data: ${id}`;
 	}
 });
