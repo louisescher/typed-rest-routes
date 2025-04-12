@@ -67,17 +67,19 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 	}
 	
 	try {
+		const cloned = request.clone();
+
 		switch (iterations) {
 			case 0:
-				return request.json();
+				return cloned.json();
 			case 1:
-				return request.formData();
+				return cloned.formData();
 			case 2:
-				return request.arrayBuffer();
+				return cloned.arrayBuffer();
 			case 3:
-				return request.blob();
+				return cloned.blob();
 			case 4:
-				return request.text();
+				return cloned.text();
 			default:
 				return false;
 		}
