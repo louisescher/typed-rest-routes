@@ -7,6 +7,8 @@ An Astro integration that allows for creating type-safe server endpoints.
 - [Installation](#installation)
 - [Usage](#usage)
 	- [Advanced Usage](#advanced-usage)
+		- [Custom Errors](#custom-errors)
+		- [Custom Responses](#custom-responses)
 - [But Why?](#but-why)
 
 ## Installation
@@ -58,6 +60,7 @@ TRR aims to keep compatibility with existing [Astro server endpoints](https://do
 You can use it in any server endpoint to generate a function that you can export like usual. For example, if you want to handle all GET requests to `/api/hello`, you can define your route handler like this:
 
 ```ts
+// src/pages/api/hello.ts
 import { defineRoute } from "typed-rest-routes/server";
 
 export const GET = defineRoute({
@@ -82,31 +85,46 @@ async function main() {
 main();
 ```
 
-Another advantage of using TRR is that you can define schemas for your routes using [zod](https://zod.dev). This is helpful when creating handlers that take in a body, like a `POST` request handler:
+Another advantage of using TRR is that you can define schemas for your routes using [zod](https://zod.dev). This is helpful when creating handlers that take in a body or query parameters:
 
 ```ts
 import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
+export const GET = defineRoute({
+	query: z.object({
+		name: z.string()
+	}),
+	handler: async (context, query) => {
+		// `query` is typed and already verified!
+		return `Hello, ${query.name}!`;
+	},
+});
+
 export const POST = defineRoute({
 	schema: z.object({
 		name: z.string()
 	}),
-	handler: async (context, body) => {
+	handler: async (context, query, body) => {
 		// `body` is typed and already verified!
 		return `Hello, ${body.name}!`;
 	},
 });
 ```
 
-When using `callRoute`, you will now also get access to a third parameter with full completions to provide your body in the request:
+When using `callRoute`, you will now also get access to a third parameter for query params and a fourth parameter for the body with full completions:
 
 ```ts
 import { callRoute } from "typed-rest-routes/client";
 
 async function main() {
 	// You will get full type completions here!
-	const result = await callRoute("/api/hello", "POST", {
+	const result = await callRoute("/api/hello", "GET", {
+		name: "Houston"
+	});
+	
+	// An example of no query parameters but a body instead
+	const result = await callRoute("/api/hello", "POST", undefined, {
 		name: "Houston"
 	});
 }
@@ -116,8 +134,25 @@ main();
 
 ### Advanced Usage
 
-Since TRR is built on normal server endpoints, the `handler` function you pass to `defineRoute` always has access to the [Astro context](https://docs.astro.build/en/guides/middleware/#the-context-object) as the first parameter. If you define a schema, the second parameter will be the verified body of the request, already parsed with the schema you have defined.
+Since TRR is built on normal server endpoints, the `handler` function you pass to `defineRoute` always has access to the [Astro context](https://docs.astro.build/en/guides/middleware/#the-context-object) as the first parameter. If you define a query schema, a type-safe object containing the query parameters as key-value pairs will be passed as the second parameter. If you do not define one, the second parameter will be undefined. If you define a schema, the third parameter will be the parsed body of the request.
 
+#### Custom Errors
+
+TRR does not automatically generate errors for your schemas as to not cause confusion when "guessing wrong". Instead, you can use Zod to provide your own error messages. Please check [their documentation](https://zod.dev) on how to do so. Please note that the different error messages you can customize depend on the data type. However, in general, you can use the `message` option to provide a generic error message:
+
+```ts
+
+export const POST = defineRoute({
+	schema: z.object({
+		name: z.string({ message: "The name key must be set to a string!" })
+	}, { message: "Missing JSON body!" }),
+	handler: async (context, { name }) => {
+		return `Hello, ${name}!`
+	},
+});
+```
+
+#### Custom Responses
 You can return any data type from the handler, even a `Response`. TRR will pass all data along to the client and try it's best to give you a parsed output on the client:
 
 ```ts

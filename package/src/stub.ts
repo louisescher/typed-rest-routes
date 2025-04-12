@@ -27,14 +27,7 @@ declare module "typed-rest-routes/client" {
 	 * @param data - The data to send to the route.
 	 * @returns A promise that resolves to the result of the route.
 	 */
-	export function callRoute<
-		Route extends keyof TypedRoutes,
-		Method extends keyof TypedRoutes[Route],
-		Data extends import("astro/zod").infer<Parameters<TypedRoutes[Route][Method]>[1]>,
-		Result extends TypedRoutes[Route][Method]['_result']
-	>(
-		...args: (Data extends import("astro/zod").ZodUndefined ? [url: Route, method: Method] : [url: Route, method: Method, data: Data])
-	): Promise<Result>;
+	export const callRoute: typeof import("${resolve('./client.js')}").callRoute;
 }
 `;
 

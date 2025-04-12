@@ -1,5 +1,5 @@
 import type { z } from "astro/zod";
-import type { GenericResult, RouteDefinition, WrappedAPIRoute } from "./types";
+import type { GenericResult, EndpointDefinition, WrappedAPIRoute } from "./types";
 import type { APIRoute } from "astro";
 
 /**
@@ -75,11 +75,11 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 			case 1:
 				return await cloned.formData();
 			case 2:
-				return await cloned.arrayBuffer();
+				return await cloned.text();
 			case 3:
 				return await cloned.blob();
 			case 4:
-				return await cloned.text();
+				return await cloned.arrayBuffer();
 			default:
 				return false;
 		}
@@ -90,15 +90,29 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 }
 
 function defineRoute<
+	QuerySchema extends z.ZodTypeAny = z.ZodUndefined,
 	Schema extends z.ZodTypeAny = z.ZodUndefined,
 	Result extends GenericResult = undefined
 >(
-	{ schema, handler }: RouteDefinition<Schema, Result>
-): WrappedAPIRoute<Schema> & { _result: Result } {
+	{ query, schema, handler }: EndpointDefinition<QuerySchema, Schema, Result>
+): WrappedAPIRoute<QuerySchema, Schema> & { _result: Result } {
 	// @ts-expect-error - Type black magic. Not actually used (lmao)
 	return async (context) => {
+		let reqQueryObj: z.SafeParseSuccess<z.infer<QuerySchema>>['data'] | undefined = undefined;
+
+		if (query) {
+			const queryParamObj = context.url.searchParams.size > 0 ? Object.fromEntries(context.url.searchParams.entries()) : undefined;
+			const queryResult = query.safeParse(queryParamObj);
+
+			if (!queryResult.success) {
+				return new Response(queryResult.error.issues[0].message, { status: 400 });
+			}
+
+			reqQueryObj = queryResult.data;
+		}
+
 		if (!schema) {
-			let result: GenericResult = await handler(context, undefined);
+			let result: GenericResult = await handler(context, reqQueryObj, undefined);
 
 			return handleHandlerResponse(result);
 		}
@@ -109,13 +123,13 @@ function defineRoute<
 			return new Response("Unsupported request body", { status: 400 });
 		}
 
-		const result = schema.safeParse(reqBody);
+		const result = schema.safeParse(reqBody || undefined);
 
 		if (!result.success) {
 			return new Response(result.error.issues[0].message, { status: 400 });
 		}
 
-		let handlerRes: GenericResult = await handler(context, result.data);
+		let handlerRes: GenericResult = await handler(context, reqQueryObj, result.data);
 
 		return handleHandlerResponse(handlerRes);
 	};
