@@ -53,11 +53,11 @@ export const GET = defineRoute({
 Due to the addition of query parameter support, the `callRoute` function has been changed to accept the query parameters as the third parameter and the body as the fourth parameter. Please make sure to update your code accordingly if you are using the `callRoute` function with a body:
 
 ```diff
--const result = await callRoute("/api/hello", "GET", {
+-const result = await callRoute("/api/hello", "POST", {
 -  name: "Houston"
 -});
 
-+const result = await callRoute("/api/hello", "GET", undefined, {
++const result = await callRoute("/api/hello", "POST", undefined, {
 +  name: "Houston"
 +});
 ```
@@ -66,14 +66,14 @@ Due to the addition of query parameter support, the `callRoute` function has bee
 The `defineRoute` function has been changed to accept the query parameters as the second parameter and the body as the third parameter. Please make sure to update your code accordingly if you are using the `defineRoute` function with a body:
 
 ```diff
--export const GET = defineRoute({
+-export const POST = defineRoute({
 -  // ...
 -  handler: (context, body) => {
 -    return `Hello, ${body.name}!`;
 -  }
 -});
 
-+export const GET = defineRoute({
++export const POST = defineRoute({
 +  // ...
 +  handler: (context, query, body) => {
 +    return `Hello, ${body.name}!`;
