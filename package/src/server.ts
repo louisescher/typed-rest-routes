@@ -1,5 +1,5 @@
 import type { z } from "astro/zod";
-import type { GenericResult, RouteDefinition } from "./types";
+import type { GenericResult, RouteDefinition, WrappedAPIRoute } from "./types";
 import type { APIRoute } from "astro";
 
 /**
@@ -88,8 +88,6 @@ async function bruteForceRequestBody(request: Request, iterations: number = 0): 
 		return body;
 	}
 }
-
-type WrappedAPIRoute<Schema extends z.ZodTypeAny> = (context: Parameters<APIRoute>[0], schema: Schema) => Response
 
 function defineRoute<
 	Schema extends z.ZodTypeAny = z.ZodUndefined,
