@@ -62,11 +62,6 @@ export default defineIntegration({
 								id: "trr:server",
 								content: `export { defineRoute } from "${resolve('./wrappers.js')}"`,
 								context: "server", 
-							},
-							{
-								id: "trr:client",
-								content: `export { callRoute } from "${resolve('./wrappers.js')}"`,
-								context: "client",
 							}
 						]
 					});

@@ -72,7 +72,7 @@ export const GET = defineRoute({
 When used in conjunction with `callRoute`, this setup provides you with autocompleted URLs and methods in client-side scripts:
 
 ```ts
-import { callRoute } from "trr:client";
+import { callRoute } from "typed-rest-routes/client";
 
 async function main() {
 	// You will get full type completions here!
@@ -102,7 +102,7 @@ export const POST = defineRoute({
 When using `callRoute`, you will now also get access to a third parameter with full completions to provide your body in the request:
 
 ```ts
-import { callRoute } from "trr:client";
+import { callRoute } from "typed-rest-routes/client";
 
 async function main() {
 	// You will get full type completions here!

@@ -12,6 +12,6 @@ export const POST = defineRoute({
 		id: z.string({ required_error: "id is required" }),
 	}),
 	handler: (context, { id }) => {
-		return `Hello ${id}`;
+		return `Hello, ${id}!`;
 	}
 });

@@ -122,15 +122,6 @@ function defineRoute<
 	};
 }
 
-/**
- * A mock type for the generated TypedRoutes interface.
- */
-interface TypedRoutes {
-	[route: string]: {
-		[method: string]: (...args: any[]) => Response & { _result: any };
-	};
-}
-
 async function callRoute<
 	Route extends keyof TypedRoutes,
 	Method extends keyof TypedRoutes[Route],

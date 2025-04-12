@@ -1,16 +1,23 @@
 import type { HTTPMethod } from "./src/types"
 
+declare global {
+	/**
+	 * A mock type for the generated TypedRoutes interface.
+	 */
+	interface TypedRoutes {
+		[route: string]: {
+			[method: string]: (...args: any[]) => Response & {
+				_result: any;
+			};
+		};
+	}
+}
+
 declare module "trr:server" {
 	/**
 	 * TODO: JSDoc
 	 */
 	export function defineRoute<Schema extends import("astro/zod").ZodTypeAny>(options: import("./src/types").RouteDefinition<Schema>): import("astro").APIRoute;
-}
-
-interface TypedRoutes {
-	[key: string]: {
-		[key: import('./src/types').HTTPMethod]: (...args: any) => any;
-	}
 }
 
 declare module "trr:client" {
