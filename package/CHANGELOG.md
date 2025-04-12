@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.1.5
+
+### Patch Changes
+
+- [`47b28ca`](https://github.com/louisescher/typed-rest-routes/commit/47b28ca68ede553d7a10747e8649f355d461ce8f) Thanks [@louisescher](https://github.com/louisescher)! - Fixes a potential request body read error
+
 ## 0.1.4
 
 ### Patch Changes
