@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.1
+
+### Patch Changes
+
+- [#16](https://github.com/louisescher/typed-rest-routes/pull/16) [`dfc8d7a`](https://github.com/louisescher/typed-rest-routes/commit/dfc8d7ac072e1a18eb67ed37b180981f04c6330a) Thanks [@louisescher](https://github.com/louisescher)! - Fixes an issue where sending a request with the wrong body would cause an internal server error.
+
 ## 0.2.0
 
 ### Minor Changes
