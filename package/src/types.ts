@@ -20,3 +20,5 @@ export type Endpoint = {
 }
 
 export type SSRLoadModuleFn = (url: string, opts?: { fixStacktrace?: boolean | undefined; } | undefined) => Promise<Record<string, any>>;
+
+export type WrappedAPIRoute<Schema extends z.ZodTypeAny> = (context: Parameters<APIRoute>[0], schema: Schema) => Response
