@@ -13,14 +13,14 @@ declare global {
 	}
 }
 
-declare module "trr:server" {
+declare module "typed-rest-routes/server" {
 	/**
 	 * TODO: JSDoc
 	 */
 	export function defineRoute<Schema extends import("astro/zod").ZodTypeAny>(options: import("./src/types").RouteDefinition<Schema>): import("astro").APIRoute;
 }
 
-declare module "trr:client" {
+declare module "typed-rest-routes/client" {
 	/**
 	 * TODO: JSDoc
 	 */

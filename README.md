@@ -58,7 +58,7 @@ TRR aims to keep compatibility with existing [Astro server endpoints](https://do
 You can use it in any server endpoint to generate a function that you can export like usual. For example, if you want to handle all GET requests to `/api/hello`, you can define your route handler like this:
 
 ```ts
-import { defineRoute } from "trr:server";
+import { defineRoute } from "typed-rest-routes/server";
 
 export const GET = defineRoute({
 	handler: async (context) => {
@@ -85,7 +85,7 @@ main();
 Another advantage of using TRR is that you can define schemas for your routes using [zod](https://zod.dev). This is helpful when creating handlers that take in a body, like a `POST` request handler:
 
 ```ts
-import { defineRoute } from "trr:server";
+import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
 export const POST = defineRoute({
@@ -121,7 +121,7 @@ Since TRR is built on normal server endpoints, the `handler` function you pass t
 You can return any data type from the handler, even a `Response`. TRR will pass all data along to the client and try it's best to give you a parsed output on the client:
 
 ```ts
-import { defineRoute } from "trr:server";
+import { defineRoute } from "typed-rest-routes/server";
 import { z } from "astro/zod";
 
 export const POST = defineRoute({
