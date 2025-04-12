@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.2
+
+### Patch Changes
+
+- [#18](https://github.com/louisescher/typed-rest-routes/pull/18) [`680a903`](https://github.com/louisescher/typed-rest-routes/commit/680a90304cb0f5c5eb4ff297613926660bd42db8) Thanks [@louisescher](https://github.com/louisescher)! - Adds a README to the package to be displayed on npm
+
 ## 0.2.1
 
 ### Patch Changes
