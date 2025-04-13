@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.5
+
+### Patch Changes
+
+- [#24](https://github.com/louisescher/typed-rest-routes/pull/24) [`c1a8e13`](https://github.com/louisescher/typed-rest-routes/commit/c1a8e13d926006fcf38eee161f4c91c3e276f34a) Thanks [@louisescher](https://github.com/louisescher)! - Fixes invalid return types from the `callRoute` function
+
 ## 0.2.4
 
 ### Patch Changes
