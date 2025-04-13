@@ -11,7 +11,7 @@ async function callRoute<
 		? [route: Route, method: Method] 
 		: [route: Route, method: Method, data: Data]
 	)
-): Promise<unknown> {
+): Promise<Result> {
 	const [route, method, data] = args as NonDefinitiveArgs<Route, Method, Data>;
 
 	let url = route as string;
