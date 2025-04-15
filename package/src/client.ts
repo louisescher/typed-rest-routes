@@ -12,11 +12,19 @@ async function callRoute<
 		: [route: Route, method: Method, data: Data]
 	)
 ): Promise<Result> {
-	const [route, method, data] = args as NonDefinitiveArgs<Route, Method, Data>;
+	let [route, method, data] = args as NonDefinitiveArgs<Route, Method, Data>;
 
 	let url = route as string;
 
 	const useQueryParams = method === "GET" || method === "HEAD";
+
+	if (data) {
+		for (const [key, value] of Object.entries(data || {})) {
+			if (typeof value === "object" && value !== null) {
+				data[key] = JSON.stringify(value);
+			}
+		}
+	}
 
 	if ((method === "GET" || method === "HEAD") && !!data) {
 		const queryParams = new URLSearchParams(data);
