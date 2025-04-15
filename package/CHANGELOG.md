@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.6
+
+### Patch Changes
+
+- [#26](https://github.com/louisescher/typed-rest-routes/pull/26) [`78a287b`](https://github.com/louisescher/typed-rest-routes/commit/78a287bd07e24a7a90f2bd17e608b7b2b43ee03f) Thanks [@louisescher](https://github.com/louisescher)! - Fixes nested objects in GET requests being relayed as "[object Object]"
+
 ## 0.2.5
 
 ### Patch Changes
