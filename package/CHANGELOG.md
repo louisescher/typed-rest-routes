@@ -1,5 +1,13 @@
 # typed-rest-routes
 
+## 0.2.7
+
+### Patch Changes
+
+- [#30](https://github.com/louisescher/typed-rest-routes/pull/30) [`026b29d`](https://github.com/louisescher/typed-rest-routes/commit/026b29d2f14bd58184888fd64208b8bc30b4f7b8) Thanks [@louisescher](https://github.com/louisescher)! - Fixes an issue where responses would have an invalid return type
+
+- [#28](https://github.com/louisescher/typed-rest-routes/pull/28) [`56f5f61`](https://github.com/louisescher/typed-rest-routes/commit/56f5f61e14a9c68d1618f3a420141f098a485348) Thanks [@louisescher](https://github.com/louisescher)! - TRR now attempts to safely parse JSON from a response if no content-type header is present. If that fails, text is returned.
+
 ## 0.2.6
 
 ### Patch Changes
