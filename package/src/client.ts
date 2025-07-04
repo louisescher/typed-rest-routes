@@ -48,7 +48,12 @@ async function callRoute<
 	} else if (cTypeHeader?.startsWith("application/octet-stream")) {
 		return result.blob() as Promise<Result>;
 	} else {
-		return result.text() as Promise<Result>;
+		try {
+			const json = await result.json() as Promise<Result>;
+			return json;
+		} catch(err) {
+			return result.text() as Promise<Result>;
+		}
 	}
 }
 
