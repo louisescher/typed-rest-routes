@@ -6,7 +6,7 @@ export const GET = defineRoute({
 		id: z.string({ message: "id is required" }),
 	}, { message: "This endpoint needs query parameters (id)" }),
 	handler: (context, { id }) => {
-		return `[GET]    Data: ${id}`;
+		return new Response(JSON.stringify({ test: true }), { status: 200 });
 	}
 });
 
