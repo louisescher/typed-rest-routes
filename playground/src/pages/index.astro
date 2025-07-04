@@ -14,7 +14,7 @@ import { SomeReactComponent } from '../components/SomeReactComponent';
 		const pos = await callRoute("/api", "POST", { id: "Astro Component" });
 		const del = await callRoute("/api", "DELETE", { id: "Astro Component" });
 
-		console.log(get);
+		console.log(await get.json());
 		console.log(put);
 		console.log(pos);
 		console.log(del);

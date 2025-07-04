@@ -39,6 +39,10 @@ async function callRoute<
 		body: !!data && !useQueryParams ? JSON.stringify(data) : undefined,
 	});
 
+	if (result.headers.has("x-trr-type")) {
+		return result as Result;
+	}
+
 	const cTypeHeader = result.headers.get("content-type");
 
 	if (cTypeHeader?.startsWith("application/json")) {

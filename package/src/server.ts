@@ -1,6 +1,5 @@
 import type { z } from "astro/zod";
 import type { GenericResult, EndpointDefinition, WrappedAPIRoute } from "./types";
-import type { APIRoute } from "astro";
 
 /**
  * Generates a content type for a given result.
@@ -38,6 +37,7 @@ function handleHandlerResponse(result: GenericResult): Response {
 	}
 	
 	if (result instanceof Response) {
+		result.headers.append("x-trr-type", "response");
 		return result;
 	}
 
