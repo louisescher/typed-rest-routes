@@ -145,7 +145,9 @@ TRR does not automatically generate errors for your schemas as to not cause conf
 export const POST = defineRoute({
 	schema: z.object({
 		name: z.string({ message: "The name key must be set to a string!" })
-	}, { message: "Missing JSON body!" }),
+	}, {
+		message: "Missing JSON body!"
+	}),
 	handler: async (context, data) => {
 		return `Hello, ${data.name}!`
 	},
