@@ -55,7 +55,7 @@ export default defineIntegration({
 					addVitePlugin(params, { plugin });
 				},
 				"astro:routes:resolved": async ({ routes }) => {
-					const allEndpoints = routes.filter((route) => route.type === "endpoint" && !route.pattern.startsWith("/_"));
+					const allEndpoints = routes.filter((route) => route.type === "endpoint" && route.origin !== "external" && !route.pattern.startsWith("/_"));
 
 					endpoints = generateEndpoints(allEndpoints);
 				},

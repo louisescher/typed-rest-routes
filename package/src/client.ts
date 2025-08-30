@@ -20,7 +20,7 @@ async function callRoute<
 
 	if (data) {
 		for (const [key, value] of Object.entries(data || {})) {
-			if (typeof value === "object" && value !== null) {
+			if (typeof value === "object" && !Array.isArray(value) && value !== null) {
 				data[key] = JSON.stringify(value);
 			}
 		}
