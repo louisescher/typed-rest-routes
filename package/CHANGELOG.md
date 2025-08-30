@@ -1,5 +1,11 @@
 # typed-rest-routes
 
+## 0.2.8
+
+### Patch Changes
+
+- [`ccc7c63`](https://github.com/louisescher/typed-rest-routes/commit/ccc7c6340e961a033b832a02ba014af7f3a4aa74) Thanks [@louisescher](https://github.com/louisescher)! - Fixes two issues, related to endpoints from other integrations and wrong serialization.
+
 ## 0.2.7
 
 ### Patch Changes
