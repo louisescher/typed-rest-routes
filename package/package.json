@@ -8,6 +8,10 @@
 		"name": "Louis Escher",
 		"url": "https://louisescher.dev"
 	},
+	"repository": {
+		"url": "https://github.com/louisescher/typed-rest-routes",
+		"directory": "package"
+	},
 	"keywords": [
 		"astro",
 		"astro-integration",
